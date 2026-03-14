@@ -1,6 +1,8 @@
 // Run with: npx tsx scripts/verify-yahoo.ts
 
-import yahooFinance from 'yahoo-finance2'
+import YahooFinance from 'yahoo-finance2'
+
+const yahooFinance = new YahooFinance()
 
 const YAHOO_SYMBOLS = {
   'Iron Ore': 'TIO=F',           // SGX Iron Ore 62% Fe
@@ -21,7 +23,7 @@ async function verify() {
         console.log(`⚠️  ${name} (${symbol}): No price in response`)
       }
     } catch (err: any) {
-      console.log(`❌ ${name} (${symbol}): ${err.message}`)
+      console.log(`❌ ${name} (${symbol}): ${err.message?.substring(0, 100)}`)
     }
   }
 
