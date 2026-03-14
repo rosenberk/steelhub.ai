@@ -1,0 +1,82 @@
+name: SteelHub Scheduled Data Fetch
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+env:
+  AUTH_HEADER: "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
+  BASE_URL: ${{ secrets.APP_URL }}
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    steps:
+      # Prices: per-region to stay under Vercel 10s timeout
+      - name: Prices - Far East
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/prices?region=far-east" --max-time 15
+        continue-on-error: true
+
+      - name: Prices - Asia
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/prices?region=asia" --max-time 15
+        continue-on-error: true
+
+      - name: Prices - CIS
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/prices?region=cis" --max-time 15
+        continue-on-error: true
+
+      - name: Prices - EU
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/prices?region=eu" --max-time 15
+        continue-on-error: true
+
+      - name: Prices - Africa
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/prices?region=africa" --max-time 15
+        continue-on-error: true
+
+      - name: Prices - North America
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/prices?region=north-america" --max-time 15
+        continue-on-error: true
+
+      - name: Prices - South America
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/prices?region=south-america" --max-time 15
+        continue-on-error: true
+
+      # News: daily regions
+      - name: News - Far East
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/news?region=far-east" --max-time 15
+        continue-on-error: true
+
+      - name: News - Asia
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/news?region=asia" --max-time 15
+        continue-on-error: true
+
+      - name: News - CIS
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/news?region=cis" --max-time 15
+        continue-on-error: true
+
+      - name: News - EU
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/news?region=eu" --max-time 15
+        continue-on-error: true
+
+      # Exchange rates: 1 call
+      - name: Exchange Rates
+        run: curl -sf -X POST -H "$AUTH_HEADER" "$BASE_URL/api/cron/exchange-rates" --max-time 15
+        continue-on-error: true
+
+  # Weekly regions run only on Sundays
+  fetch-weekly-news:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 6 * * 0' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: News - Africa
+        run: curl -sf -X POST -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.APP_URL }}/api/cron/news?region=africa" --max-time 15
+        continue-on-error: true
+
+      - name: News - North America
+        run: curl -sf -X POST -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.APP_URL }}/api/cron/news?region=north-america" --max-time 15
+        continue-on-error: true
+
+      - name: News - South America
+        run: curl -sf -X POST -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.APP_URL }}/api/cron/news?region=south-america" --max-time 15
+        continue-on-error: true

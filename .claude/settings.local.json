@@ -5,7 +5,8 @@
       "WebFetch(domain:github.com)",
       "Bash(cd:*)",
       "Bash(git config:*)",
-      "Bash(gh auth:*)"
+      "Bash(gh auth:*)",
+      "Bash(ls:*)"
     ]
   }
 }

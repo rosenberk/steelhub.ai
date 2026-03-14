@@ -1,0 +1,43 @@
+{
+  "snapshotDate": "2026-03-15",
+  "note": "Static fallback prices — used when all live sources fail. Update periodically.",
+  "prices": {
+    "HRC": {
+      "far-east": 405, "asia": 520, "eu": 650, "cis": 430,
+      "africa": 550, "north-america": 720, "south-america": 560
+    },
+    "CRC": {
+      "far-east": 480, "asia": 590, "eu": 750, "cis": 510,
+      "africa": 620, "north-america": 830, "south-america": 640
+    },
+    "Rebar": {
+      "far-east": 420, "asia": 500, "eu": 600, "cis": 410,
+      "africa": 530, "north-america": 680, "south-america": 520
+    },
+    "Scrap": {
+      "far-east": 320, "asia": 380, "eu": 340, "cis": 310,
+      "africa": 350, "north-america": 370, "south-america": 330
+    },
+    "IronOre": {
+      "far-east": 110, "asia": 115, "eu": 120, "cis": 105,
+      "africa": 112, "north-america": 118, "south-america": 108
+    },
+    "CokingCoal": {
+      "far-east": 220, "asia": 230, "eu": 240, "cis": 210,
+      "africa": 225, "north-america": 235, "south-america": 215
+    },
+    "Slab": {
+      "far-east": 390, "asia": 460, "eu": 560, "cis": 400,
+      "africa": 480, "north-america": 620, "south-america": 470
+    },
+    "Billet": {
+      "far-east": 400, "asia": 470, "eu": 540, "cis": 390,
+      "africa": 490, "north-america": 600, "south-america": 460
+    },
+    "BDI": {
+      "global": 1850
+    }
+  },
+  "currency": "USD",
+  "unit": "MT"
+}
