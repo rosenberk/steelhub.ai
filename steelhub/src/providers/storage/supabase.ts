@@ -85,8 +85,18 @@ export class SupabaseStorageProvider implements StorageProvider {
       fetched_at: item.fetchedAt.toISOString(),
     }))
 
-    const { error } = await supabase.from('news').upsert(rows, { onConflict: 'url', ignoreDuplicates: true })
-    if (error) throw error
+    // Split: rows with URL use upsert (dedup), rows without URL use plain insert
+    const withUrl = rows.filter(r => r.url != null)
+    const withoutUrl = rows.filter(r => r.url == null)
+
+    if (withUrl.length > 0) {
+      const { error } = await supabase.from('news').upsert(withUrl, { onConflict: 'url', ignoreDuplicates: true })
+      if (error) throw error
+    }
+    if (withoutUrl.length > 0) {
+      const { error } = await supabase.from('news').insert(withoutUrl)
+      if (error) throw error
+    }
   }
 
   async getNews(filters: NewsFilter): Promise<NewsItem[]> {
