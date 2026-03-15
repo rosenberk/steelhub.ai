@@ -66,6 +66,7 @@ export interface PriceFilter {
   fromDate?: Date
   toDate?: Date
   limit?: number
+  ascending?: boolean
 }
 
 // === News Data ===
@@ -86,6 +87,7 @@ export interface NewsItem {
 export interface NewsFilter {
   category?: Category
   region?: Region
+  country?: string
   fromDate?: Date
   toDate?: Date
   limit?: number
