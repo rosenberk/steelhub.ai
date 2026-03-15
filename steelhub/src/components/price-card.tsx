@@ -8,15 +8,19 @@ interface PriceCardProps {
   unit: string
   change: number | null
   staleLevel: StaleLevel
+  onClick?: () => void
 }
 
-export function PriceCard({ product, price, unit, change, staleLevel }: PriceCardProps) {
+export function PriceCard({ product, price, unit, change, staleLevel, onClick }: PriceCardProps) {
   const isAvailable = price !== null && price > 0
   const isBaseline = staleLevel === 'baseline'
 
   if (!isAvailable) {
     return (
-      <div className="bg-[#1e293b] rounded-lg p-3.5 border-l-[3px] border-[#334155]">
+      <div
+        className={`bg-[#1e293b] rounded-lg p-3.5 border-l-[3px] border-[#334155] ${onClick ? 'cursor-pointer' : ''}`}
+        onClick={onClick}
+      >
         <div className="text-[11px] text-[#475569] mb-1.5">{product}</div>
         <div className="text-xl font-semibold text-[#475569]">N/A</div>
         <div className="text-[11px] text-[#475569] mt-1">—</div>
@@ -41,7 +45,10 @@ export function PriceCard({ product, price, unit, change, staleLevel }: PriceCar
     : `${arrow}${Math.abs(change).toFixed(1)}%`
 
   return (
-    <div className="bg-[#1e293b] rounded-lg p-3.5 border-l-[3px] border-[#38bdf8] hover:bg-[#253449] transition-colors">
+    <div
+      className={`bg-[#1e293b] rounded-lg p-3.5 border-l-[3px] border-[#38bdf8] hover:bg-[#253449] transition-colors ${onClick ? 'cursor-pointer' : ''}`}
+      onClick={onClick}
+    >
       <div className="text-[11px] text-[#64748b] mb-1.5">{product}</div>
       <div className="text-xl font-semibold text-[#e2e8f0]">
         ${price.toLocaleString('en-US', { maximumFractionDigits: 0 })}

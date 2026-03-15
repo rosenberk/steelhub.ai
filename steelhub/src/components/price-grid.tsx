@@ -3,16 +3,17 @@
 import { PriceCard } from './price-card'
 import { PRODUCTS, ALL_PRODUCTS } from '@/config/products'
 import { CATEGORIES } from '@/config/categories'
-import { PriceResponse } from '@/lib/types'
+import { PriceResponse, SteelProduct } from '@/lib/types'
 
 interface PriceGridProps {
   prices: PriceResponse[]
   isLoading: boolean
+  onProductSelect?: (product: SteelProduct) => void
 }
 
 const GRID_CLASSES = 'grid grid-cols-2 min-[768px]:grid-cols-3 min-[1100px]:grid-cols-5 gap-3'
 
-export function PriceGrid({ prices, isLoading }: PriceGridProps) {
+export function PriceGrid({ prices, isLoading, onProductSelect }: PriceGridProps) {
   if (isLoading) {
     return (
       <div className={GRID_CLASSES}>
@@ -49,6 +50,7 @@ export function PriceGrid({ prices, isLoading }: PriceGridProps) {
               unit={entry?.unit ?? config.defaultUnit}
               change={null}
               staleLevel={entry?.staleLevel ?? 'baseline'}
+              onClick={onProductSelect ? () => onProductSelect(productId) : undefined}
             />
           )
         })}
