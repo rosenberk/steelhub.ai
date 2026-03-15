@@ -42,24 +42,34 @@ export class BraveSearchProvider implements NewsProvider {
       }
 
       const json = await res.json()
+
+      // Filter noise first, then classify in parallel to avoid Vercel 10s timeout
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const filtered = (json.results ?? []).filter((result: any) => {
+        return !isNoise(result.title || '', result.description || '')
+      })
+
+      const classifications = await Promise.all(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        filtered.map((result: any) =>
+          classifyWithGroq(result.title || '', result.description || '')
+        )
+      )
+
       const articles: NewsItem[] = []
-
-      for (const result of json.results ?? []) {
-        const title = result.title || ''
-        const snippet = result.description || ''
-
-        if (isNoise(title, snippet)) continue
-
-        const classification = await classifyWithGroq(title, snippet)
+      for (let i = 0; i < filtered.length; i++) {
+        const result = filtered[i]
+        const classification = classifications[i]
         if (!classification.isRelevant) continue
 
+        const title = result.title || ''
         const tier = getDomainTier(result.url || '')
         const confidenceBoost = tier === 1 ? 0.2 : tier === 2 ? 0.1 : 0
 
         articles.push({
           title,
           url: result.url || undefined,
-          snippet,
+          snippet: result.description || '',
           source: result.meta_url?.hostname || undefined,
           category: classification.category,
           region,

@@ -21,11 +21,11 @@ export async function classifyWithGroq(
   const groqKey = process.env.GROQ_API_KEY
   if (!groqKey) return classifyWithKeywords(title, snippet)
 
-  try {
-    const client = new Groq({ apiKey: groqKey })
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 3000)
+  const client = new Groq({ apiKey: groqKey })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 3000)
 
+  try {
     const completion = await client.chat.completions.create(
       {
         model: 'llama-3.1-8b-instant',
@@ -57,6 +57,7 @@ export async function classifyWithGroq(
       isRelevant: parsed.isRelevant !== false,
     }
   } catch {
+    clearTimeout(timeout)
     return classifyWithKeywords(title, snippet)
   }
 }

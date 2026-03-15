@@ -40,27 +40,34 @@ export class NewsAPIProvider implements NewsProvider {
       }
 
       const json = await res.json()
-      const articles: NewsItem[] = []
 
-      for (const article of json.articles ?? []) {
+      // Filter noise first, then classify in parallel to avoid Vercel 10s timeout
+      const filtered = (json.articles ?? []).filter((article: { title?: string; description?: string }) => {
         const title = article.title || ''
         const snippet = article.description || ''
+        return !isNoise(title, snippet)
+      })
 
-        // Filter noise
-        if (isNoise(title, snippet)) continue
+      const classifications = await Promise.all(
+        filtered.map((article: { title?: string; description?: string }) =>
+          classifyWithGroq(article.title || '', article.description || '')
+        )
+      )
 
-        // Classify
-        const classification = await classifyWithGroq(title, snippet)
+      const articles: NewsItem[] = []
+      for (let i = 0; i < filtered.length; i++) {
+        const article = filtered[i]
+        const classification = classifications[i]
         if (!classification.isRelevant) continue
 
-        // Domain tier confidence boost
+        const title = article.title || ''
         const tier = getDomainTier(article.url || '')
         const confidenceBoost = tier === 1 ? 0.2 : tier === 2 ? 0.1 : 0
 
         articles.push({
           title,
           url: article.url || undefined,
-          snippet,
+          snippet: article.description || '',
           source: article.source?.name || undefined,
           category: classification.category,
           region,
