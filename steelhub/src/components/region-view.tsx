@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react'
 import { PriceGrid } from './price-grid'
 import { NewsList } from './news-list'
+import { PriceChart } from './price-chart'
 import { REGIONS } from '@/config/regions'
-import { Region, PriceResponse } from '@/lib/types'
+import { Region, PriceResponse, SteelProduct } from '@/lib/types'
 
 interface RegionViewProps {
   region: Region
@@ -14,6 +15,7 @@ export function RegionView({ region }: RegionViewProps) {
   const [prices, setPrices] = useState<PriceResponse[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<SteelProduct | null>(null)
 
   const config = REGIONS[region]
 
@@ -81,10 +83,18 @@ export function RegionView({ region }: RegionViewProps) {
       )}
 
       {/* Price Grid */}
-      <PriceGrid prices={prices} isLoading={isLoading} />
+      <PriceGrid prices={prices} isLoading={isLoading} onProductSelect={(p) => {
+        setSelectedProduct(prev => prev === p ? null : p)
+      }} />
+
+      {selectedProduct && (
+        <div className="mt-4">
+          <PriceChart product={selectedProduct} region={region} />
+        </div>
+      )}
 
       {/* News (placeholder) */}
-      <NewsList />
+      <NewsList region={region} />
     </div>
   )
 }
